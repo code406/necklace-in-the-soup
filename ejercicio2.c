@@ -11,6 +11,7 @@
 
 #define NAME_MAX 25
 #define SHM_NAME "/shm_ej2"
+#define MAXTIME 10
 
 typedef struct {
 	int previous_id;        //!< Id of the previous client.
@@ -27,16 +28,12 @@ int main(int argc, char *argv[]) {
 	struct sigaction act;
 	ClientInfo *clientinfo = NULL;
 
-	if(argc < 2) {
+	if(argc < 2){
 		printf("El programa requiere el numero de hijos a crear:\n");
 		printf("Terminando la ejecucion.\n");
 		exit(EXIT_FAILURE);
 	}
 	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
-	if(nsons < 0) {
-		printf("Introduce un numero positivo\n");
-		exit(EXIT_FAILURE);
-	}
 
 	sigemptyset(&(act.sa_mask));
 	act.sa_flags = 0;
@@ -66,7 +63,6 @@ int main(int argc, char *argv[]) {
 		shm_unlink(SHM_NAME);
 		exit(EXIT_FAILURE);
 	}
-
 	/*Liberamos una vez mapeado*/
 	shm_unlink(SHM_NAME);
 	close(fd_shm);
@@ -85,12 +81,12 @@ int main(int argc, char *argv[]) {
 		else if (pid == 0) {
 			srand(getpid());
 			/*Duerme un tiempo aleatorio entre 1 y 10 segundos*/
-			sleep((rand() % 10) + 1);
+			sleep((rand() % MAXTIME) + 1);
 			/*Incrementa el id del cliente previo*/
 			clientinfo->previous_id++;
 			/*Solicita nombre y lo escribe en memoria compartida*/
 			printf("\nIntroduzca nombre para un cliente nuevo: ");
-			fgets(clientinfo->name, sizeof(clientinfo->name), stdin);
+			fgets(clientinfo->name, sizeof(char) * NAME_MAX, stdin);
 			/*Incrementa el id del cliente*/
 			clientinfo->id++;
 			/*Envia la señal SIGUSR1 al proceso padre*/
@@ -100,11 +96,14 @@ int main(int argc, char *argv[]) {
 			}
 			exit(EXIT_SUCCESS);
 		}
+		/*Padre*/
+		else {
+			pause();
+			printf("Leyendo memoria compartida: \n  Id_Previo: %d\n  Id: %d\n  Nombre: %s", clientinfo->previous_id, clientinfo->id, clientinfo->name);
+		}
 	}
 
 	/*Solo el padre*/
-	pause();
-	printf("Leyendo memoria compartida: \n  Id_Previo: %d\n  Id: %d\n  Nombre: %s", clientinfo->previous_id, clientinfo->id, clientinfo->name);
 	for(i = 0; i < nsons; i++)
 		wait(NULL);
 

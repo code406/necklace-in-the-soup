@@ -8,9 +8,12 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <semaphore.h>
 
 #define NAME_MAX 25
 #define SHM_NAME "/shm_ej2"
+#define SEM "/sem2"
+#define MAXTIME 10
 
 typedef struct {
 	int previous_id;        //!< Id of the previous client.
@@ -26,6 +29,7 @@ int main(int argc, char *argv[]) {
 	pid_t pid, ppid;
 	struct sigaction act;
 	ClientInfo *clientinfo = NULL;
+	sem_t *sem = NULL;
 
 	if(argc < 2){
 		printf("El programa requiere el numero de hijos a crear:\n");
@@ -33,6 +37,13 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
+
+	/*Crea y abre un semaforo*/
+	if ((sem = sem_open(SEM, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED) {
+    	perror("sem_open");
+    	return -1;
+	}
+	sem_unlink(SEM);
 
 	sigemptyset(&(act.sa_mask));
 	act.sa_flags = 0;
@@ -62,7 +73,6 @@ int main(int argc, char *argv[]) {
 		shm_unlink(SHM_NAME);
 		exit(EXIT_FAILURE);
 	}
-
 	/*Liberamos una vez mapeado*/
 	shm_unlink(SHM_NAME);
 	close(fd_shm);
@@ -79,14 +89,15 @@ int main(int argc, char *argv[]) {
 		}
 		/*Hijo*/
 		else if (pid == 0) {
+			sem_wait(sem);
 			srand(getpid());
 			/*Duerme un tiempo aleatorio entre 1 y 10 segundos*/
-			sleep((rand() % 10) + 1);
+			sleep((rand() % MAXTIME) + 1);
 			/*Incrementa el id del cliente previo*/
 			clientinfo->previous_id++;
 			/*Solicita nombre y lo escribe en memoria compartida*/
 			printf("\nIntroduzca nombre para un cliente nuevo: ");
-			fgets(clientinfo->name, sizeof(clientinfo->name), stdin);
+			fgets(clientinfo->name, sizeof(char) * NAME_MAX, stdin);
 			/*Incrementa el id del cliente*/
 			clientinfo->id++;
 			/*Envia la señal SIGUSR1 al proceso padre*/
@@ -94,12 +105,15 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "Error al enviar SIGUSR1\n");
 				exit(EXIT_FAILURE);
 			}
+			sem_post(sem);
 			exit(EXIT_SUCCESS);
 		}
 		/*Padre*/
 		else {
 			pause();
+			sem_wait(sem);
 			printf("Leyendo memoria compartida: \n  Id_Previo: %d\n  Id: %d\n  Nombre: %s", clientinfo->previous_id, clientinfo->id, clientinfo->name);
+			sem_post(sem);
 		}
 	}
 
