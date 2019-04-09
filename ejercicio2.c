@@ -28,9 +28,13 @@ int main(int argc, char *argv[]) {
 	struct sigaction act;
 	ClientInfo *clientinfo = NULL;
 
-	if(argc < 2){
+	if(argc < 2) {
 		printf("El programa requiere el numero de hijos a crear:\n");
 		printf("Terminando la ejecucion.\n");
+		exit(EXIT_FAILURE);
+	}
+	if(nsons < 0) {
+		printf("Introduce un numero positivo\n");
 		exit(EXIT_FAILURE);
 	}
 	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
