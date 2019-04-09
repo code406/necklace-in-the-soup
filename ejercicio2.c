@@ -33,11 +33,11 @@ int main(int argc, char *argv[]) {
 		printf("Terminando la ejecucion.\n");
 		exit(EXIT_FAILURE);
 	}
+	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
 	if(nsons < 0) {
 		printf("Introduce un numero positivo\n");
 		exit(EXIT_FAILURE);
 	}
-	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
 
 	sigemptyset(&(act.sa_mask));
 	act.sa_flags = 0;

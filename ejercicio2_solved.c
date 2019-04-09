@@ -36,11 +36,11 @@ int main(int argc, char *argv[]) {
 		printf("Terminando la ejecucion.\n");
 		exit(EXIT_FAILURE);
 	}
+	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
 	if(nsons < 0) {
 		printf("Introduce un numero positivo\n");
 		exit(EXIT_FAILURE);
 	}
-	nsons = atoi(argv[1]); /*Numero de hijos que se quieren*/
 
 	/*Crea y abre un semaforo*/
 	if ((sem = sem_open(SEM, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED) {
