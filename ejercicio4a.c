@@ -11,7 +11,7 @@
 #include <string.h>
 
 #define TAMNAME 20
-#define MSGSIZE 20      /*¿¿¿¿Tiene que ser de 2KB????*/
+#define MSGSIZE 2000
 
 
 int main(int argc, char *argv[]){
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
 	attributes.mq_msgsize = sizeof(msj);
 
     if(argc < 3) {
-        printf("El programa requiere el nombre del archivo y de la cola:\n");
+        printf("El programa a requiere el nombre del archivo y de la cola:\n");
         printf("Terminando la ejecucion.\n");
         exit(EXIT_FAILURE);
     }
@@ -38,11 +38,14 @@ int main(int argc, char *argv[]){
     strcpy(&fichero[1], argv[1]);
     strcpy(&colamsjs[1], argv[2]);
 
-    /*Creamos la cola de mensajes solo de escritura (para enviar)*/
-    cola = mq_open(colamsjs, O_WRONLY | O_CREAT, S_IWUSR, &attributes);
+    /*Creamos la cola de mensajes*/
+    cola = mq_open(colamsjs, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, &attributes);
 
     /*Usamos argv[1] porque aqui no queremos la / al inicio*/
     flectura = fopen(argv[1], "r");
+
+/*    mmap(NULL, sizeof(FILE), PROT_READ | PROT_WRITE, MAP_SHARED, flectura, 0);                       TODO abrir con un mmap*/
+
 
     while(fscanf(flectura, "%s", msj) != EOF) {
         if( mq_send(cola, msj, sizeof(msj), 1) == -1) {
