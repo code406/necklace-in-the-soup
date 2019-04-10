@@ -37,8 +37,7 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   /*Mapeamos el segmento de memoria*/
-  queue = (Queue *)mmap(NULL, sizeof(Queue *), PROT_READ | PROT_WRITE,
-                        MAP_SHARED, fd, 0);
+  queue = (Queue *)mmap(NULL, sizeof(Queue *), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (queue == MAP_FAILED) {
     fprintf(stderr, "Error al mapear el segmento de memoria compartida\n");
     unlink(FILENAME);

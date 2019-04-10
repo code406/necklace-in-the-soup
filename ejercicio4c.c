@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 #define TAMNAME 20
-#define MSGSIZE 20
+#define MSGSIZE 2048
 
 int main(int argc, char *argv[]) {
   struct mq_attr attributes;
@@ -36,18 +36,18 @@ int main(int argc, char *argv[]) {
   }
   strcpy(&colarec[1], argv[1]);
 
+  /*Abrir la cola en la que vienen los mensajes*/
   colarecibos = mq_open(colarec, O_RDWR, S_IRUSR | S_IWUSR, NULL);
   if (colarecibos == -1) {
     printf("Error al abrir la cola %s\n", colarec);
     exit(EXIT_FAILURE);
   }
-
   mq_getattr(colarecibos, &attributes);
 
+  /*Para tantos mensajes como haya en la cola (mq_curmsgs), imprimirlos*/
   printf("\nRESULTADO MODIFICADO Y EN BLOQUES:\n");
   for (i = 0; i < attributes.mq_curmsgs; i++) {
     printf("#### Bloque #%d\n", i);
-    /*Todos los ejercicios petan si intentan usar una cola inexistente*/
     temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
     if (temp == -1) {
       fprintf(stderr, "Error receiving message\n");

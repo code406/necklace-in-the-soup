@@ -40,14 +40,12 @@ int main(int argc, char *argv[]) {
   /*Le damos el tamanio adecuado para almacenar la cola (puntero, la estructura
    * es privada)*/
   if (ftruncate(fd, sizeof(Queue *))) {
-    fprintf(stderr,
-            "Error al cambiar el tamaño del segmento de memoria compartida\n");
+    fprintf(stderr, "Error al cambiar el tamaño del segmento de memoria compartida\n");
     unlink(FILENAME);
     exit(EXIT_FAILURE);
   }
   /*Mapeamos el segmento de memoria*/
-  queue = (Queue *)mmap(NULL, sizeof(Queue *), PROT_READ | PROT_WRITE,
-                        MAP_SHARED, fd, 0);
+  queue = (Queue *)mmap(NULL, sizeof(Queue *), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (queue == MAP_FAILED) {
     fprintf(stderr, "Error al mapear el segmento de memoria compartida\n");
     unlink(FILENAME);
@@ -57,8 +55,7 @@ int main(int argc, char *argv[]) {
   close(fd);
 
   /*Crea y abre un semaforo de productor/consumidor*/
-  if ((sem = sem_open(SEM, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1)) ==
-      SEM_FAILED) {
+  if ((sem = sem_open(SEM, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED) {
     perror("sem_open");
     return -1;
   }

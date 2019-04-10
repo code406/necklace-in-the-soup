@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 #define TAMNAME 20
-#define MSGSIZE 20
+#define MSGSIZE 2048
 #define NHIJOS 3
 
 int main(int argc, char *argv[]) {
@@ -49,23 +49,23 @@ int main(int argc, char *argv[]) {
   strcpy(&ncolaenv[1], argv[2]);
   strcpy(&ncolarec[1], argv[3]);
 
-  if (mq_open(ncolaenv, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, &attributes1) ==
-      -1) {
+  /*Crear dos colas de mensajes*/
+  if (mq_open(ncolaenv, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, &attributes1) == -1) {
     printf("Error al abrir la cola %s\n", ncolaenv);
     exit(EXIT_FAILURE);
   }
-  if (mq_open(ncolarec, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, &attributes2) ==
-      -1) {
+  if (mq_open(ncolarec, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, &attributes2) == -1) {
     printf("Error al abrir la cola %s\n", ncolarec);
     exit(EXIT_FAILURE);
   }
 
+  /*Crear hijos para ejecutar los subprogramas de forma secuencial*/
   for (i = 0; i < NHIJOS; i++) {
     if ((pid = fork()) < 0) {
       printf("ERROR en fork.\n");
       exit(EXIT_FAILURE);
     }
-    /*Hijo*/
+    /*Hijo (subprograma execlp)*/
     else if (pid == 0) {
       if (i == 0) {
         if (execlp("./ejercicio4a", "./ejercicio4a", argv[1], argv[2], NULL) == -1) {
@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
       }
     /*Padre*/
     } else {
+	  /*Espera a que termine el subprograma antes de lanzar siguiente*/
       wait(NULL);
     }
   }

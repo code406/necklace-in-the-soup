@@ -19,14 +19,14 @@
 #include <string.h>
 
 #define TAMNAME 20
-#define MSGSIZE 20
+#define MSGSIZE 2048
 
 int main(int argc, char *argv[]) {
   struct mq_attr attributes1;
   struct mq_attr attributes2;
-  char colarec[TAMNAME] = "/";      /*Inicializamos las dos cadenas con un / porque*/
-  char colaenv[TAMNAME] = "/";     /*siempre deben iniciarse los nombres con es caracter*/
-  char msj[MSGSIZE] = "a";          /*puede que esta inicialización no sea correcta*/
+  char colarec[TAMNAME] = "/";
+  char colaenv[TAMNAME] = "/";
+  char msj[MSGSIZE] = "a";
   int i;
   long veces;
   unsigned int prio = 1;
@@ -55,19 +55,21 @@ int main(int argc, char *argv[]) {
   mq_getattr(colarecibos, &attributes1);
   mq_getattr(colaenvios, &attributes2);
 
-  strcpy(msj, colarec);
-
+  /*Tantas veces como mensajes haya en cola (mq_curmsgs)*/
   for(veces=0L; veces<attributes1.mq_curmsgs; veces++) {
+	/*Recibir un mensaje*/
     if (mq_receive(colarecibos, msj, MSGSIZE, &prio) == -1) {
       printf("Error al recibir de la cola %s\n", colarec);
       exit(EXIT_FAILURE);
     }
+	/* Reemplazar caracteres en el rango a-z por su siguiente en el abecedario*/
     for(i = 0; msj[i] != 0; i++) {
         if(msj[i] == 'z')
             msj[i] = 'a';
         else if (msj[i] >= 'a' && msj[i] <= 'z')
             msj[i] = (msj[i] + 1);
     }
+	/*Enviar la cadena modificada a otra cola*/
     if(mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
         fprintf (stderr, "Error sending message\n");
         exit(EXIT_FAILURE);
