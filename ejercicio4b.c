@@ -53,14 +53,15 @@ int main(int argc, char *argv[]) {
 
     /* TODO en este bucle peta
     while(temp!=-1) { */
-        temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
-        printf("TEMP = %d\n", temp); //DEBUG
-        for(i = 0; msj[i] != 0 ; i++){
-            if(msj[i] == 'z')
-                msj[i] = 'a';
-            else
-                msj[i] = (msj[i] + 1);
-        }
+    temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
+    printf("TEMP = %d\n", temp); //DEBUG
+    for(i = 0; msj[i] != 0 ; i++){
+        if(msj[i] == 'z')
+            msj[i] = 'a';
+        else if (msj[i] >= 'a' && msj[i] <= 'z')
+            msj[i] = (msj[i] + 1);
+    }
+
 
         if( mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
             fprintf (stderr, "Error sending message\n");
@@ -74,7 +75,7 @@ int main(int argc, char *argv[]) {
         for(i = 0; msj[i] != 0 ; i++){
             if(msj[i] == 'z')
                 msj[i] = 'a';
-            else
+            else if (msj[i] >= 'a' && msj[i] <= 'z')
                 msj[i] = (msj[i] + 1);
         }
 
