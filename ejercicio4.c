@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
       }
     /*Padre*/
     } else {
-	  /*Espera a que termine el subprograma antes de lanzar siguiente*/
+      /*Espera a que termine el subprograma antes de lanzar siguiente*/
       wait(NULL);
     }
   }

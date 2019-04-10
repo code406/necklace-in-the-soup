@@ -57,19 +57,19 @@ int main(int argc, char *argv[]) {
 
   /*Tantas veces como mensajes haya en cola (mq_curmsgs)*/
   for(veces=0L; veces<attributes1.mq_curmsgs; veces++) {
-	/*Recibir un mensaje*/
+    /*Recibir un mensaje*/
     if (mq_receive(colarecibos, msj, MSGSIZE, &prio) == -1) {
       printf("Error al recibir de la cola %s\n", colarec);
       exit(EXIT_FAILURE);
     }
-	/* Reemplazar caracteres en el rango a-z por su siguiente en el abecedario*/
+    /* Reemplazar caracteres en el rango a-z por su siguiente en el abecedario*/
     for(i = 0; msj[i] != 0; i++) {
         if(msj[i] == 'z')
             msj[i] = 'a';
         else if (msj[i] >= 'a' && msj[i] <= 'z')
             msj[i] = (msj[i] + 1);
     }
-	/*Enviar la cadena modificada a otra cola*/
+    /*Enviar la cadena modificada a otra cola*/
     if(mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
         fprintf (stderr, "Error sending message\n");
         exit(EXIT_FAILURE);
