@@ -56,14 +56,12 @@ int main(int argc, char *argv[]) {
   }
   /*Le damos el tamanio adecuado, en este caso el de la estructura*/
   if (ftruncate(fd_shm, sizeof(ClientInfo))) {
-    fprintf(stderr,
-            "Error al cambiar el tamaño del segmento de memoria compartida\n");
+    fprintf(stderr, "Error al cambiar el tamaño del segmento de memoria compartida\n");
     shm_unlink(SHM_NAME);
     exit(EXIT_FAILURE);
   }
   /*Mapeamos el segmento de memoria*/
-  clientinfo = mmap(NULL, sizeof(*clientinfo), PROT_READ | PROT_WRITE,
-                    MAP_SHARED, fd_shm, 0);
+  clientinfo = mmap(NULL, sizeof(*clientinfo), PROT_READ | PROT_WRITE, MAP_SHARED, fd_shm, 0);
   if (clientinfo == MAP_FAILED) {
     fprintf(stderr, "Error al mapear el segmento de memoria compartida\n");
     shm_unlink(SHM_NAME);
@@ -105,8 +103,7 @@ int main(int argc, char *argv[]) {
     /*Padre*/
     else {
       pause();
-      printf("Leyendo memoria compartida: \n  Id_Previo: %d\n  Id: %d\n  "
-             "Nombre: %s",
+      printf("Leyendo memoria compartida: \n  Id_Previo: %d\n  Id: %d\n  Nombre: %s",
              clientinfo->previous_id, clientinfo->id, clientinfo->name);
     }
   }
