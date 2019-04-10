@@ -56,17 +56,17 @@ attributes2.mq_msgsize = MSGSIZE;
       /*Hijo*/
       else if (pid == 0) {
         if(i==0) {
-          if(execlp("./ejercicio4A", "./ejercicio4A", argv[1], argv[2], NULL) == -1){
+          if(execlp("./ejercicio4a", "./ejercicio4a", argv[1], argv[2], NULL) == -1){
               printf("Error en execlp (1)\n");
               exit(EXIT_FAILURE);
           }
         } else if(i==1) {
-          if(execlp("./ejercicio4B", "./ejercicio4B", argv[2], argv[3], NULL) == -1){
+          if(execlp("./ejercicio4b", "./ejercicio4b", argv[2], argv[3], NULL) == -1){
             printf("Error en execlp (2)\n");
             exit(EXIT_FAILURE);
           }
         } else {
-          if(execlp("./ejercicio4C", "./ejercicio4C", argv[3], NULL) == -1) {
+          if(execlp("./ejercicio4c", "./ejercicio4c", argv[3], NULL) == -1) {
             printf("Error en execlp (3)\n");
             exit(EXIT_FAILURE);
           }

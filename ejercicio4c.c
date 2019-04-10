@@ -44,7 +44,6 @@ attributes.mq_msgsize = MSGSIZE;
         fprintf (stderr, "Error receiving message\n");
         return EXIT_FAILURE;
     }
-    msj[strlen(msj)-2] = ' ';
     printf("%s\n", msj);
 
 
@@ -58,7 +57,6 @@ attributes.mq_msgsize = MSGSIZE;
         fprintf (stderr, "Error receiving message\n");
         return EXIT_FAILURE;
     }
-    msj[strlen(msj)-2] = ' ';
     printf("%s\n", msj);
 
     return 0;
