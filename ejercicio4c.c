@@ -28,19 +28,26 @@ int main(int argc, char *argv[]) {
         printf("Terminando la ejecucion.\n");
         exit(EXIT_FAILURE);
     }
-
     strcpy(&colarec[1], argv[1]);
-    printf("Entrando al C\n");
+
     colarecibos = mq_open(colarec, O_RDWR, S_IRUSR | S_IWUSR, NULL);
+    if (colarecibos == -1) {
+      printf("Error al abrir la cola %s\n", colarec);
+      exit(EXIT_FAILURE);
+    }
 
     mq_getattr(colarecibos, &attributes);
+
+    printf("\nRESULTADO MODIFICADO Y EN BLOQUES:\n");
     for(i=0; i<attributes.mq_curmsgs; i++) {
+      printf("#### Bloque #%d\n", i);
       /*Todos los ejercicios petan si intentan usar una cola inexistente*/
       temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
       if( temp == -1) {
           fprintf (stderr, "Error receiving message\n");
           return EXIT_FAILURE;
       }
+      msj[MSGSIZE] = '\0';
       printf("%s\n", msj);
     }
 
