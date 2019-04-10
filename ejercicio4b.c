@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
     attributes1.mq_flags = 0;
 	attributes1.mq_maxmsg = 10;
 	attributes1.mq_curmsgs = 0;
-	attributes1.mq_msgsize = sizeof(char) * 20;
+	attributes1.mq_msgsize = MSGSIZE;
 
     attributes2.mq_flags = 0;
     attributes2.mq_maxmsg = 10;
     attributes2.mq_curmsgs = 0;
-    attributes2.mq_msgsize = sizeof(char) * 20;
+    attributes2.mq_msgsize = MSGSIZE;
 
     if(argc < 3) {
         printf("El programa b requiere el nombre de la cola para recibir y enviar mensajes:\n");

@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
     attributes.mq_flags = 0;
     attributes.mq_maxmsg = 10;
     attributes.mq_curmsgs = 0;
-attributes.mq_msgsize = sizeof(char) * 20;
+attributes.mq_msgsize = MSGSIZE;
 
     if(argc < 3) {
         printf("El programa a requiere el nombre del archivo y de la cola:\n");
@@ -46,11 +46,11 @@ attributes.mq_msgsize = sizeof(char) * 20;
     fstat(fd, &estadisticas);
     cadena = (char *) mmap(NULL, estadisticas.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     printf("Cadena :%s\n",cadena );
-    if( mq_send(cola, cadena, sizeof(cadena), 1) == -1) {
+    if( mq_send(cola, cadena, MSGSIZE, 1) == -1) {
         fprintf (stderr, "Error sending message\n");
         return EXIT_FAILURE;
     }
-    if( mq_send(cola, &cadena[MSGSIZE], sizeof(cadena), 1) == -1) {
+    if( mq_send(cola, &cadena[MSGSIZE], MSGSIZE, 1) == -1) {
         fprintf (stderr, "Error sending message\n");
         return EXIT_FAILURE;
     }

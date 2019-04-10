@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
     attributes1.mq_flags = 0;
     attributes1.mq_maxmsg = 10;
     attributes1.mq_curmsgs = 0;
-attributes1.mq_msgsize = sizeof(char) * 20;
+attributes1.mq_msgsize = MSGSIZE;
 
     attributes2.mq_flags = 0;
     attributes2.mq_maxmsg = 10;
     attributes2.mq_curmsgs = 0;
-attributes2.mq_msgsize = sizeof(char) * 20;
+attributes2.mq_msgsize = MSGSIZE;
 
     if(argc < 4) {
         printf("El programa requiere el nombre del fichero y las dos colas:\n");
@@ -72,9 +72,10 @@ attributes2.mq_msgsize = sizeof(char) * 20;
           }
         }
       }
+      else {
+        wait(NULL);
+      }
     }
-    for (i = 0; i < NHIJOS; i++)
-      wait(NULL);
 
     printf("Programa principal terminando\n");
     // CERRAR COLAS??
