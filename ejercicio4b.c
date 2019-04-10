@@ -25,16 +25,6 @@ int main(int argc, char *argv[]) {
     mqd_t colarecibos;
     mqd_t colaenvios;
 
-    attributes1.mq_flags = 0;
-	attributes1.mq_maxmsg = 10;
-	attributes1.mq_curmsgs = 0;
-	attributes1.mq_msgsize = MSGSIZE;
-
-    attributes2.mq_flags = 0;
-    attributes2.mq_maxmsg = 10;
-    attributes2.mq_curmsgs = 0;
-    attributes2.mq_msgsize = MSGSIZE;
-
     if(argc < 3) {
         printf("El programa b requiere el nombre de la cola para recibir y enviar mensajes:\n");
         printf("Terminando la ejecucion.\n");
@@ -43,48 +33,29 @@ int main(int argc, char *argv[]) {
     strcpy(&colarec[1], argv[1]);
     strcpy(&colaenv[1], argv[2]);
 
-      printf("Entrando al B\n");
+    printf("Entrando al B\n");
     /*Asignamos las colas de lectura y escritura*/
     colarecibos = mq_open(colarec, O_RDWR, S_IRUSR | S_IWUSR, &attributes1);
     colaenvios = mq_open(colaenv, O_RDWR, S_IWUSR | S_IWUSR, &attributes2);
+    mq_getattr(colarecibos, &attributes1);
+    mq_getattr(colaenvios, &attributes2);
 
     strcpy(msj, colarec);
+    for(i=0; i<attributes1.mq_curmsgs; i++) {
+      temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
+      printf("TEMP = %d\n", temp); //DEBUG
+      for(i = 0; msj[i] != 0 ; i++){
+          if(msj[i] == 'z')
+              msj[i] = 'a';
+          else if (msj[i] >= 'a' && msj[i] <= 'z')
+              msj[i] = (msj[i] + 1);
+      }
 
-
-    /* TODO en este bucle peta
-    while(temp!=-1) { */
-    temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
-    printf("TEMP = %d\n", temp); //DEBUG
-    for(i = 0; msj[i] != 0 ; i++){
-        if(msj[i] == 'z')
-            msj[i] = 'a';
-        else if (msj[i] >= 'a' && msj[i] <= 'z')
-            msj[i] = (msj[i] + 1);
+      if( mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
+          fprintf (stderr, "Error sending message\n");
+          return EXIT_FAILURE;
+      }
     }
-
-
-        if( mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
-            fprintf (stderr, "Error sending message\n");
-            return EXIT_FAILURE;
-        }
-
-
-
-        temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
-        printf("TEMP = %d\n", temp); //DEBUG
-        for(i = 0; msj[i] != 0 ; i++){
-            if(msj[i] == 'z')
-                msj[i] = 'a';
-            else if (msj[i] >= 'a' && msj[i] <= 'z')
-                msj[i] = (msj[i] + 1);
-        }
-
-        if( mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
-            fprintf (stderr, "Error sending message\n");
-            return EXIT_FAILURE;
-        }
-    //}
-
 
     return 0;
 }

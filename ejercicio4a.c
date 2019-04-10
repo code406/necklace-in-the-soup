@@ -15,19 +15,14 @@
 
 
 int main(int argc, char *argv[]){
-    int fd, i;
-    struct mq_attr attributes;
+    int fd, i, veces;
+    struct mq_attr attributes, oldattr;
     char fichero[TAMNAME];     /*Inicializamos las dos cadenas con un / porque*/
     char colamsjs[TAMNAME] = "/";     /*siempre deben iniciarse los nombres con es caracter*/
     char msj[MSGSIZE] = "a";
     char *cadena = NULL;
     mqd_t cola;
     struct stat estadisticas;
-
-    attributes.mq_flags = 0;
-    attributes.mq_maxmsg = 10;
-    attributes.mq_curmsgs = 0;
-attributes.mq_msgsize = MSGSIZE;
 
     if(argc < 3) {
         printf("El programa a requiere el nombre del archivo y de la cola:\n");
@@ -46,20 +41,17 @@ attributes.mq_msgsize = MSGSIZE;
     fstat(fd, &estadisticas);
     cadena = (char *) mmap(NULL, estadisticas.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     printf("Cadena :%s\n",cadena );
-    if( mq_send(cola, cadena, MSGSIZE, 1) == -1) {
-        fprintf (stderr, "Error sending message\n");
-        return EXIT_FAILURE;
+    veces = strlen(cadena) / MSGSIZE;
+    printf("VECES: %d\n", veces);
+    for(i = 0; i <= veces; i++) {
+      if( mq_send(cola, &cadena[MSGSIZE*i], MSGSIZE, 1) == -1) {
+          fprintf (stderr, "Error sending message\n");
+          return EXIT_FAILURE;
+          attributes.mq_curmsgs ++;
+      }
     }
-    if( mq_send(cola, &cadena[MSGSIZE], MSGSIZE, 1) == -1) {
-        fprintf (stderr, "Error sending message\n");
-        return EXIT_FAILURE;
-    }
-    /*for(i=0; i<strlen(cadena) && cadena[i] != EOF; i++) {
-        if( mq_send(cola, &cadena[i], sizeof(char), 1) == -1) {
-    		    fprintf (stderr, "Error sending message\n");
-    		    return EXIT_FAILURE;
-        }
-    }*/
+    mq_getattr(cola, &oldattr);
+    mq_setattr(cola, &attributes, &oldattr);
 
     mq_close(cola);
     //mq_unlink(colamsjs);
