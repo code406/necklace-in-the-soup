@@ -1,3 +1,11 @@
+/**
+ * @file queue.c
+ * @author Juan Martin Pinilla (juan.martinp@estudiante.uam.es)
+ * @author David Palomo Marcos (david.palomo@estudiante.uam.es)
+ * Grupo: 2212
+ * @date 10 Abr 2019
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,3 +1,11 @@
+/**
+ * @file ejercicio4b.c
+ * @author Juan Martin Pinilla (juan.martinp@estudiante.uam.es)
+ * @author David Palomo Marcos (david.palomo@estudiante.uam.es)
+ * Grupo: 2212
+ * @date 10 Abr 2019
+ */
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>

@@ -1,3 +1,11 @@
+/**
+ * @file ejercicio3_consumidorB.c
+ * @author Juan Martin Pinilla (juan.martinp@estudiante.uam.es)
+ * @author David Palomo Marcos (david.palomo@estudiante.uam.es)
+ * Grupo: 2212
+ * @date 10 Abr 2019
+ */
+
 #include <fcntl.h>
 #include <mqueue.h>
 #include <semaphore.h>
