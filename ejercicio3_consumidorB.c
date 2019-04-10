@@ -50,22 +50,18 @@ int main(int argc, char *argv[]) {
   /*Abrimos semaforo de productor/consumidor sin crearlo*/
   if ((sem = sem_open(SEM, O_EXCL, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED) {
     perror("sem_open");
-    return -1;
+    exit(EXIT_FAILURE);
   }
   sem_unlink(SEM);
 
   /*Bucle principal: Lectura (extraccion) de la cola hasta que lee el '\0'*/
   while (c != '\0') {
     sem_wait(sem);
-
     if (queue_isEmpty(queue) == FALSE) {
       c = queue_extract(queue);
-      if (c == '\0')
-        printf("   Extrayendo '\\0'\nFinaliza el consumidor.\n");
-      else
-        printf("   Extrayendo '%c'\n", c);
+      if (c == '\0') printf("   Extrayendo '\\0'\nFinaliza el consumidor.\n");
+      else printf("   Extrayendo '%c'\n", c);
     }
-
     sem_post(sem);
   }
 

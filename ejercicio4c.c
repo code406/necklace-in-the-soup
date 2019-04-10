@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
   mqd_t colarecibos;
 
   if (argc < 2) {
-    printf("El programa a requiere el nombre de la cola de lectura:\n");
-    printf("Terminando la ejecucion.\n");
+    printf("[EJ4C] El programa a requiere el nombre de la cola de lectura:\n");
+    printf("[EJ4C] Terminando la ejecucion.\n");
     exit(EXIT_FAILURE);
   }
   strcpy(&colarec[1], argv[1]);
@@ -39,22 +39,25 @@ int main(int argc, char *argv[]) {
   /*Abrir la cola en la que vienen los mensajes*/
   colarecibos = mq_open(colarec, O_RDWR, S_IRUSR | S_IWUSR, NULL);
   if (colarecibos == -1) {
-    printf("Error al abrir la cola %s\n", colarec);
+    printf("[EJ4C] Error al abrir la cola %s\n", colarec);
     exit(EXIT_FAILURE);
   }
   mq_getattr(colarecibos, &attributes);
 
   /*Para tantos mensajes como haya en la cola (mq_curmsgs), imprimirlos*/
-  printf("\nRESULTADO MODIFICADO Y EN BLOQUES:\n");
+  printf("[EJ4C] Leyendo %ld mensajes de la cola %s:\n", attributes.mq_curmsgs, colarec);
   for (i = 0; i < attributes.mq_curmsgs; i++) {
-    printf("#### Bloque #%d\n", i);
     temp = mq_receive(colarecibos, msj, MSGSIZE, &prio);
     if (temp == -1) {
-      fprintf(stderr, "Error receiving message\n");
+      fprintf(stderr, "[EJ4C] Error receiving message\n");
       exit(EXIT_FAILURE);
     }
     msj[MSGSIZE] = '\0';
-    printf("%s\n", msj);
+    printf("[EJ4C] Imprimiendo el mensaje numero %d\n", i+1);
+    printf("---------------------------------------------------------\n");
+    printf("%s", msj);
+    if(i != (attributes.mq_curmsgs - 1)) printf("\n");
+    printf("---------------------------------------------------------\n");
   }
 
   exit(EXIT_SUCCESS);

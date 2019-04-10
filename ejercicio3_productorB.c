@@ -57,23 +57,20 @@ int main(int argc, char *argv[]) {
   /*Crea y abre un semaforo de productor/consumidor*/
   if ((sem = sem_open(SEM, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED) {
     perror("sem_open");
-    return -1;
+	unlink(FILENAME);
+    exit(EXIT_FAILURE);
   }
 
   /*Bucle principal: Leer caracteres de stdin, insertandolos en la cola*/
   printf("Introduce hasta %d caracteres: ", restante);
   while ((c = getchar()) != EOF) {
     sem_wait(sem);
-
     restante = (TAM - 1) - queue_size(queue);
-    if (c == '\n')
-      printf("Queda espacio para %d caracteres: ", restante);
+    if (c == '\n') printf("Queda espacio para %d caracteres: ", restante);
     else if (restante > 0) {
       printf("   Insertando '%c'\n", c);
       queue_insert(queue, c);
-    } else
-      printf("   '%c' no insertado\n", c);
-
+    } else printf("   '%c' no insertado\n", c);
     sem_post(sem);
   }
 

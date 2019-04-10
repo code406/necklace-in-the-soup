@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
       /*Incrementa el id del cliente previo*/
       clientinfo->previous_id++;
       /*Solicita nombre y lo escribe en memoria compartida*/
-      printf("\nIntroduzca nombre para un cliente nuevo: ");
+      printf("Introduzca nombre para un cliente nuevo: ");
       fgets(clientinfo->name, sizeof(char) * NAME_MAX, stdin);
       /*Incrementa el id del cliente*/
       clientinfo->id++;

@@ -34,8 +34,8 @@ int main(int argc, char *argv[]) {
   mqd_t colaenvios;
 
   if(argc < 3) {
-      printf("El programa b requiere el nombre de la cola para recibir y enviar mensajes:\n");
-      printf("Terminando la ejecucion.\n");
+      printf("[EJ4B] El programa b requiere el nombre de la cola para recibir y enviar mensajes:\n");
+      printf("[EJ4B] Terminando la ejecucion.\n");
       exit(EXIT_FAILURE);
   }
   strcpy(&colarec[1], argv[1]);
@@ -44,22 +44,24 @@ int main(int argc, char *argv[]) {
   /*Asignamos las colas de lectura y escritura*/
   colarecibos = mq_open(colarec, O_RDWR, S_IRUSR | S_IWUSR, &attributes1);
   if (colarecibos == -1) {
-    printf("Error al abrir la cola %s\n", colarec);
+    printf("[EJ4B] Error al abrir la cola %s\n", colarec);
     exit(EXIT_FAILURE);
   }
   colaenvios = mq_open(colaenv, O_RDWR, S_IWUSR | S_IWUSR, &attributes2);
   if (colaenvios == -1) {
-    printf("Error al abrir la cola %s\n", colaenv);
+    printf("[EJ4B] Error al abrir la cola %s\n", colaenv);
     exit(EXIT_FAILURE);
   }
   mq_getattr(colarecibos, &attributes1);
   mq_getattr(colaenvios, &attributes2);
 
   /*Tantas veces como mensajes haya en cola (mq_curmsgs)*/
+  printf("[EJ4B] Leyendo %ld mensajes de la cola %s\n", attributes1.mq_curmsgs, colarec);
+  printf("[EJ4B] Transformando y enviando mensajes a la cola %s\n", colaenv);
   for(veces=0L; veces<attributes1.mq_curmsgs; veces++) {
     /*Recibir un mensaje*/
     if (mq_receive(colarecibos, msj, MSGSIZE, &prio) == -1) {
-      printf("Error al recibir de la cola %s\n", colarec);
+      printf("[EJ4B] Error al recibir de la cola %s\n", colarec);
       exit(EXIT_FAILURE);
     }
     /* Reemplazar caracteres en el rango a-z por su siguiente en el abecedario*/
@@ -71,7 +73,7 @@ int main(int argc, char *argv[]) {
     }
     /*Enviar la cadena modificada a otra cola*/
     if(mq_send(colaenvios, msj, MSGSIZE, 1) == -1) {
-        fprintf (stderr, "Error sending message\n");
+        fprintf (stderr, "[EJ4B] Error sending message\n");
         exit(EXIT_FAILURE);
     }
   }

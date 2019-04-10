@@ -34,11 +34,11 @@ int main(int argc, char *argv[]) {
   fd_shm = shm_open(SHM_NAME, O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
   if (fd_shm == -1) {
     fprintf(stderr, "Error al crear el segmento de memoria compartida\n");
+	shm_unlink(SHM_NAME);
     exit(EXIT_FAILURE);
   }
   /*Mapeamos el segmento de memoria*/
-  queue = (Queue *)mmap(NULL, sizeof(Queue *), PROT_READ | PROT_WRITE,
-                        MAP_SHARED, fd_shm, 0);
+  queue = (Queue *)mmap(NULL, sizeof(Queue *), PROT_READ | PROT_WRITE, MAP_SHARED, fd_shm, 0);
   if (queue == MAP_FAILED) {
     fprintf(stderr, "Error al mapear el segmento de memoria compartida\n");
     shm_unlink(SHM_NAME);
@@ -51,22 +51,18 @@ int main(int argc, char *argv[]) {
   /*Abrimos semaforo de productor/consumidor sin crearlo*/
   if ((sem = sem_open(SEM, O_EXCL, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED) {
     perror("sem_open");
-    return -1;
+    exit(EXIT_FAILURE);
   }
   sem_unlink(SEM);
 
   /*Bucle principal: Lectura (extraccion) de la cola hasta que lee el '\0'*/
   while (c != '\0') {
     sem_wait(sem);
-
     if (queue_isEmpty(queue) == FALSE) {
       c = queue_extract(queue);
-      if (c == '\0')
-        printf("   Extrayendo '\\0'\nFinaliza el consumidor.\n");
-      else
-        printf("   Extrayendo '%c'\n", c);
+      if (c == '\0') printf("   Extrayendo '\\0'\nFinaliza el consumidor.\n");
+      else printf("   Extrayendo '%c'\n", c);
     }
-
     sem_post(sem);
   }
 

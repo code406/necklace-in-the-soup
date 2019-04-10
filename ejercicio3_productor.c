@@ -40,8 +40,7 @@ int main(int argc, char *argv[]) {
   /*Le damos el tamanio adecuado para almacenar la cola (puntero, la estructura
    * es privada)*/
   if (ftruncate(fd_shm, sizeof(Queue *))) {
-    fprintf(stderr,
-            "Error al cambiar el tamaño del segmento de memoria compartida\n");
+    fprintf(stderr, "Error al cambiar el tamaño del segmento de memoria compartida\n");
     shm_unlink(SHM_NAME);
     exit(EXIT_FAILURE);
   }
@@ -67,16 +66,12 @@ int main(int argc, char *argv[]) {
   printf("Introduce hasta %d caracteres: ", restante);
   while ((c = getchar()) != EOF) {
     sem_wait(sem);
-
     restante = (TAM - 1) - queue_size(queue);
-    if (c == '\n')
-      printf("Queda espacio para %d caracteres: ", restante);
+    if (c == '\n') printf("Queda espacio para %d caracteres: ", restante);
     else if (restante > 0) {
       printf("   Insertando '%c'\n", c);
       queue_insert(queue, c);
-    } else
-      printf("   '%c' no insertado\n", c);
-
+    } else printf("   '%c' no insertado\n", c);
     sem_post(sem);
   }
 
